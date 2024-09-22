@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather App</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            margin: 0;
+            font-family: 'Roboto', sans-serif;
+            background-image: url(weather.jpg); /* Background image */
+            background-size: cover;
+            background-position: center;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 20px;
+        }
+        header {
+            background: rgba(10, 10, 10, 0.7); /* Semi-transparent background */
+            color: white;
+            width: 100%;
+            padding: 20px 0;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        h1 {
+            margin: 0;
+        }
+        .weather-container {
+            background: rgba(255, 255, 255, 0.9); /* Semi-transparent white */
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+            width: 100%;
+            max-width: 400px;
+            text-align: center;
+        }
+        input {
+            padding: 10px;
+            width: 70%;
+            margin: 10px 0;
+            border: 1px solid #141414;
+            border-radius: 5px;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #090909;
+            border: none;
+            color: white;
+            border-radius: 5px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        button:hover {
+            background-color: #0b0b0b;
+        }
+        .weather-info {
+            margin-top: 20px;
+        }
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Weather App</h1>
+</header>
+
+<div class="weather-container">
+    <input type="text" id="location" placeholder="Enter a city..." />
+    <button id="getWeather">Get Weather</button>
+    <div class="weather-info" id="weatherInfo"></div>
+</div>
+
+<script>
+    const apiKey = 'a644bd2a823694827b4b69826269e04f'; // Replace with your OpenWeatherMap API key
+    const getWeatherButton = document.getElementById('getWeather');
+    const weatherInfo = document.getElementById('weatherInfo');
+
+    getWeatherButton.addEventListener('click', () => {
+        const location = document.getElementById('location').value.trim(); // Trim input
+        if (location) {
+            fetchWeather(location);
+        }
+    });
+
+    async function fetchWeather(location) {
+        const url = `https://api.openweathermap.org/data/2.5/weather?q=${location}&appid=${apiKey}&units=metric`;
+
+        try {
+            const response = await fetch(url);
+            console.log('Response:', response); // Log the response
+            if (!response.ok) {
+                throw new Error('Location not found');
+            }
+            const data = await response.json();
+            displayWeather(data);
+        } catch (error) {
+            weatherInfo.innerHTML = `<p>${error.message}</p>`;
+            console.error('Error fetching weather:', error); // Log the error
+        }
+    }
+
+    function displayWeather(data) {
+        const { main, weather, name } = data;
+        const temperature = main.temp;
+        const description = weather[0].description;
+
+        weatherInfo.innerHTML = `
+            <h2>${name}</h2>
+            <p>Temperature: ${temperature}°C</p>
+            <p>Condition: ${description.charAt(0).toUpperCase() + description.slice(1)}</p>
+        `;
+    }
+</script>
+
+</body>
+</html>
